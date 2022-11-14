@@ -8,6 +8,6 @@ public struct RelayJoinData
     public Guid allocationID;
     public byte[] allocationIDBytes;
     public byte[] connectionData;
-    public byte[] hostConnectionsData;
+    public byte[] hostConnectionData;
     public byte[] key;
 }

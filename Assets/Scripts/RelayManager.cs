@@ -8,23 +8,30 @@ using Unity.Services.Relay;
 
 public class RelayManager : MonoBehaviour
 {
+    public static RelayManager Instance { get; private set; }
+
     [SerializeField]
     private int _maxConnections = 10;
 
     [SerializeField]
     private UnityTransport _unityTransport;
 
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     public async Task<RelayHostData> SetupRelay()
     {
         Debug.Log("Relay Server starting with max connections");
+
         await UnityServices.InitializeAsync();
 
         if (!AuthenticationService.Instance.IsSignedIn)
-        {
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
-        }
 
         Allocation allocation = await Relay.Instance.CreateAllocationAsync(_maxConnections);
+
         RelayHostData relayHostData = new RelayHostData()
         {
             key = allocation.Key,
@@ -54,6 +61,9 @@ public class RelayManager : MonoBehaviour
     {
         await UnityServices.InitializeAsync();
 
+        if (!AuthenticationService.Instance.IsSignedIn)
+            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+
         JoinAllocation joinAllocation = await Relay.Instance.JoinAllocationAsync(joinCode);
 
         RelayJoinData relayJoinData = new RelayJoinData()
@@ -62,8 +72,8 @@ public class RelayManager : MonoBehaviour
             port = (ushort)joinAllocation.RelayServer.Port,
             allocationID = joinAllocation.AllocationId,
             allocationIDBytes = joinAllocation.AllocationIdBytes,
-            connectionData = joinAllocation.AllocationIdBytes,
-            hostConnectionsData = joinAllocation.HostConnectionData,
+            connectionData = joinAllocation.ConnectionData,
+            hostConnectionData = joinAllocation.HostConnectionData,
             IPv4Address = joinAllocation.RelayServer.IpV4,
             joinCode = joinCode
         };
@@ -74,7 +84,7 @@ public class RelayManager : MonoBehaviour
             relayJoinData.allocationIDBytes,
             relayJoinData.key,
             relayJoinData.connectionData,
-            relayJoinData.hostConnectionsData
+            relayJoinData.hostConnectionData
         );
 
         Debug.Log("Client joined to the game with join code " + joinCode);
