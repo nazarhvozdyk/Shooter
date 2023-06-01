@@ -9,22 +9,31 @@ public class PlayerMovement : MonoBehaviour
     private Camera _camera;
 
     [SerializeField]
-    private float _speed;
+    private Animator _animator;
+
+    [SerializeField]
+    private float _walkSpeed = 3;
+
+    [SerializeField]
+    private float _runSpeed = 7;
 
     [SerializeField]
     private float _turnSmoothTime = 0.1f;
 
     private float _turnSmoothVelocity;
+    private bool _isRunning;
+    private readonly int _IdleKey = Animator.StringToHash("Idle");
+    private readonly int _WalkKey = Animator.StringToHash("Walk");
+    private readonly int _RunKey = Animator.StringToHash("Run");
 
-    private void Update()
+    public void SetInput(float horizontal, float vertical)
     {
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
-
         Vector3 direction = new Vector3(horizontal, 0, vertical);
+
         if (direction.magnitude < 0.1f)
         {
             _rigidbody.velocity = Vector3.zero;
+            _animator.SetTrigger(_IdleKey);
             return;
         }
 
@@ -44,6 +53,29 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
         moveDir.Normalize();
-        _rigidbody.velocity = moveDir * _speed;
+        float speed;
+
+        if (_isRunning)
+        {
+            speed = _runSpeed;
+            _animator.SetTrigger(_RunKey);
+        }
+        else
+        {
+            speed = _walkSpeed;
+            _animator.SetTrigger(_WalkKey);
+        }
+
+        _rigidbody.velocity = moveDir * speed;
+    }
+
+    public void StartRunning()
+    {
+        _isRunning = true;
+    }
+
+    public void StopRunning()
+    {
+        _isRunning = false;
     }
 }
