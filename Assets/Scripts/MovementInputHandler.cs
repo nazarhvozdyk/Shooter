@@ -14,6 +14,7 @@ public class MovementInputHandler : MonoBehaviour
 
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
+
         _playerMovement.SetInput(horizontal, vertical);
     }
 }
