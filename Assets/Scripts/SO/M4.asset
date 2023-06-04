@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e0b435e470e1ff45a795672229f91cc, type: 3}
   m_Name: M4
   m_EditorClassIdentifier: 
-  intemName: Item name
+  intemName: M590
   value: 0
   sprite: {fileID: 21300012, guid: 6674e8c43c63e4f4184cbd009379498d, type: 3}
   itemType: 0
   itemPrefab: {fileID: 4955664384824370931, guid: cf451a60f2066d24cb993bd306993846, type: 3}
-  droppedItemPrefab: {fileID: 0}
+  droppedItemPrefab: {fileID: 5532155756883888122, guid: cb1e215e7d7df434986f28f6f42aa39d, type: 3}

@@ -17,4 +17,4 @@ MonoBehaviour:
   sprite: {fileID: 21300044, guid: 6674e8c43c63e4f4184cbd009379498d, type: 3}
   itemType: 0
   itemPrefab: {fileID: 6130376772382367983, guid: de7a85bedf5ca284baa79f844e20fb30, type: 3}
-  droppedItemPrefab: {fileID: 0}
+  droppedItemPrefab: {fileID: 4956911757573183293, guid: c209361fb48e36e49b0dd94b260f9991, type: 3}

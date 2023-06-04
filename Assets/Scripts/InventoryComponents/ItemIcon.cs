@@ -1,31 +1,59 @@
 using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
-public class ItemIcon : MonoBehaviour
+public class ItemIcon : MonoBehaviour, IPointerDownHandler
 {
     private static List<ItemIcon> _icons = new List<ItemIcon>();
 
     [SerializeField]
-    private TextMeshProUGUI _amountText;
-
-    [SerializeField]
-    private Image _image;
+    private ItemIconContent _contentPrefab;
+    private int _itemInvenoryPlaceIndex;
+    private ItemIconContent _content;
+    private Item _item;
+    private int _amount;
 
     private void Start()
     {
         _icons.Add(this);
     }
 
-    public void SetUp(Item item, int amount)
+    public void SetUp(Item item, int amount, int placeInInventory)
     {
-        if (amount == 1)
-            _amountText.text = string.Empty;
-        else
-            _amountText.text = amount.ToString();
+        ItemIconContent newContent = Instantiate(_contentPrefab, transform);
+        newContent.SetUp(amount, item.sprite);
+        _content = newContent;
+        _itemInvenoryPlaceIndex = placeInInventory;
+        _item = item;
+        _amount = amount;
+    }
 
-        _image.sprite = item.sprite;
+    public void SetNewItem(Item item, int amount)
+    {
+        DestroyImmediate(_content.gameObject);
+        ItemIconContent newContent = Instantiate(_contentPrefab, transform);
+        _content = newContent;
+        newContent.SetUp(amount, item.sprite);
+    }
+
+    public void SetContent(RectTransform rectTransform)
+    {
+        rectTransform.SetParent(transform, true);
+        rectTransform.localPosition = Vector3.zero;
+    }
+
+    public RectTransform GetContentTransform()
+    {
+        return _content.transform as RectTransform;
+    }
+
+    public InventoryItem GetItem()
+    {
+        InventoryItem item = new InventoryItem();
+        item.amount = _amount;
+        item.item = _item;
+
+        return item;
     }
 
     private void OnDestroy()
@@ -37,5 +65,10 @@ public class ItemIcon : MonoBehaviour
     {
         foreach (var icon in _icons)
             Destroy(icon.gameObject);
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        InventoryIconsHandler.Instance.OnIconMouseDown(this);
     }
 }

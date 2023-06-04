@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class InventoryDisplayer : MonoBehaviour
 {
+    public delegate void OnStateChanged(bool isActive);
     public static InventoryDisplayer Instance
     {
         get => _instance;
@@ -20,6 +21,7 @@ public class InventoryDisplayer : MonoBehaviour
     [SerializeField]
     private Inventory _inventory;
     public bool isActive { get; private set; }
+    public OnStateChanged onStateChanged;
 
     private void Awake()
     {
@@ -30,20 +32,22 @@ public class InventoryDisplayer : MonoBehaviour
     {
         InventoryItem[] items = _inventory.GetItems();
 
-        foreach (var item in items)
+        for (int i = 0; i < items.Length; i++)
         {
             ItemIcon itemIcon = Instantiate(_itemIconPrefab, _iconsParent);
-            itemIcon.SetUp(item.item, item.amount);
+            itemIcon.SetUp(items[i].item, items[i].amount, i);
         }
 
         _inventoryIUObject.SetActive(true);
         isActive = true;
+        onStateChanged?.Invoke(true);
     }
 
     public void Hide()
     {
         _inventoryIUObject.SetActive(false);
         isActive = false;
+        onStateChanged?.Invoke(false);
         ItemIcon.DestroyAll();
     }
 }
