@@ -5,6 +5,19 @@ public class MovementInputHandler : MonoBehaviour
     [SerializeField]
     private PlayerMovement _playerMovement;
 
+    private void Start()
+    {
+        InventoryDisplayer.Instance.onStateChanged += OnInventoryStateChanged;
+    }
+
+    private void OnInventoryStateChanged(bool value)
+    {
+        enabled = !value;
+
+        _playerMovement.StopRunning();
+        _playerMovement.SetInput(0, 0);
+    }
+
     private void Update()
     {
         if (Input.GetKey(KeyCode.LeftShift))

@@ -18,6 +18,8 @@ public class InventoryIconsHandler : MonoBehaviour
     [SerializeField]
     private Inventory _inventory;
 
+    public ItemIcon hoveredIcon;
+
     private void Awake()
     {
         _instance = this;
@@ -30,6 +32,9 @@ public class InventoryIconsHandler : MonoBehaviour
 
     public void OnIconMouseDown(ItemIcon icon)
     {
+        if (icon.IsEmpty)
+            return;
+
         _currentIconContentTransform = icon.GetContentTransform();
         _currentIconContentTransform.SetParent(_inventoryCanvas.transform, true);
         _currentIconContentTransform.position = Input.mousePosition;
@@ -46,11 +51,48 @@ public class InventoryIconsHandler : MonoBehaviour
         {
             if (_isMouseInsideInventoryInterface)
             {
-                _currentIcon.SetContent(_currentIconContentTransform);
+                if (hoveredIcon)
+                {
+                    InventoryItem currentItem = _currentIcon.GetInventoryItem();
+                    InventoryItem hoveredItem = hoveredIcon.GetInventoryItem();
+
+                    int currentItemIndex = _currentIcon.PlaceIndex;
+                    int hoveredItemIndex = hoveredIcon.PlaceIndex;
+
+                    _inventory.ChangeItemsPlace(currentItemIndex, hoveredItemIndex);
+
+                    if (_currentIcon.IsEmpty && hoveredIcon.IsEmpty)
+                    {
+                        enabled = false;
+                        return;
+                    }
+
+                    if (_currentIcon.IsEmpty)
+                    {
+                        _currentIcon.SetNewItem(hoveredItem.item, hoveredItem.amount);
+                        hoveredIcon.MakeEmpty();
+                    }
+                    else if (hoveredIcon.IsEmpty)
+                    {
+                        hoveredIcon.SetNewItem(currentItem.item, currentItem.amount);
+                        _currentIcon.MakeEmpty();
+                    }
+                    else
+                    {
+                        _currentIcon.SetNewItem(hoveredItem.item, hoveredItem.amount);
+                        hoveredIcon.SetNewItem(currentItem.item, currentItem.amount);
+                    }
+
+                    enabled = false;
+                }
+                else
+                {
+                    _currentIcon.SetContent(_currentIconContentTransform);
+                }
             }
             else
             {
-                InventoryItem item = _currentIcon.GetItem();
+                InventoryItem item = _currentIcon.GetInventoryItem();
                 _inventory.RemoveItem(item.item, item.amount);
                 Destroy(_currentIconContentTransform.gameObject);
             }

@@ -1,15 +1,34 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 
-public class InventoryUIContentInterface : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class InventoryUIContentInterface : MonoBehaviour
 {
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        InventoryIconsHandler.Instance.OnMouseInsideInventoryInterface();
-    }
+    private bool _isOverUI;
 
-    public void OnPointerExit(PointerEventData eventData)
+    [SerializeField]
+    private RectTransform _UITransform;
+
+    private void Update()
     {
-        InventoryIconsHandler.Instance.OnMouseLeftInventoryInterface();
+        bool isOverIU = RectTransformUtility.RectangleContainsScreenPoint(
+            _UITransform,
+            Input.mousePosition
+        );
+
+        if (isOverIU)
+        {
+            if (_isOverUI == false)
+            {
+                InventoryIconsHandler.Instance.OnMouseInsideInventoryInterface();
+                _isOverUI = true;
+            }
+        }
+        else
+        {
+            if (_isOverUI)
+            {
+                InventoryIconsHandler.Instance.OnMouseLeftInventoryInterface();
+                _isOverUI = false;
+            }
+        }
     }
 }

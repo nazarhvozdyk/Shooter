@@ -6,18 +6,33 @@ public class Inventory : MonoBehaviour
     public delegate void OnItemAdded(InventoryItem item);
     public delegate void OnItemRemoved(InventoryItem item);
 
-    private List<InventoryItem> _items = new List<InventoryItem>();
+    private InventoryItem[] _items;
 
     // max amount of items in one place
     [SerializeField]
     private int _stackNumber = 64;
+
+    [SerializeField]
+    private int _capacity = 10;
+    public int Capacity
+    {
+        get => _capacity;
+    }
     public event OnItemAdded onItemAdded;
     public event OnItemRemoved onItemRemoved;
 
-    public void AddItem(Item item, int amount)
+    private void Awake()
     {
-        for (int i = 0; i < _items.Count; i++)
+        _items = new InventoryItem[_capacity];
+    }
+
+    public bool AddItem(Item item, int amount)
+    {
+        for (int i = 0; i < _items.Length; i++)
         {
+            if (_items[i] == null)
+                continue;
+
             if (_items[i].item == item)
             {
                 int freeSpace = _stackNumber - _items[i].amount;
@@ -36,22 +51,31 @@ public class Inventory : MonoBehaviour
                 updatedInventoryItem.amount += amount;
                 _items[i] = updatedInventoryItem;
                 onItemAdded?.Invoke(updatedInventoryItem);
-                return;
+                return true;
             }
         }
+
+        int freePlace = GetEmptyIndex();
+
+        if (freePlace == -1)
+            return false;
 
         InventoryItem newInventoryItem = new InventoryItem();
         newInventoryItem.amount = amount;
         newInventoryItem.item = item;
 
-        _items.Add(newInventoryItem);
+        _items[freePlace] = newInventoryItem;
         onItemAdded?.Invoke(newInventoryItem);
+        return true;
     }
 
     public void RemoveItem(Item item, int amount)
     {
-        for (int i = 0; i < _items.Count; i++)
+        for (int i = 0; i < _items.Length; i++)
         {
+            if (_items[i] == null)
+                continue;
+
             if (_items[i].item == item)
             {
                 InventoryItem updatedInventoryItem = _items[i];
@@ -65,12 +89,21 @@ public class Inventory : MonoBehaviour
                 else
                 {
                     onItemRemoved?.Invoke(_items[i]);
-                    _items.RemoveAt(i);
+                    _items[i] = null;
                 }
 
                 return;
             }
         }
+    }
+
+    private int GetEmptyIndex()
+    {
+        for (int i = 0; i < _items.Length; i++)
+            if (_items[i] == null)
+                return i;
+
+        return -1;
     }
 
     public void ChangeItemsPlace(int firtsIndex, int secondIndex)
@@ -84,6 +117,6 @@ public class Inventory : MonoBehaviour
 
     public InventoryItem[] GetItems()
     {
-        return _items.ToArray();
+        return _items;
     }
 }

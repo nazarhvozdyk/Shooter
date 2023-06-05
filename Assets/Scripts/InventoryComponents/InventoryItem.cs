@@ -1,5 +1,5 @@
 [System.Serializable]
-public struct InventoryItem
+public class InventoryItem
 {
     public Item item;
     public int amount;

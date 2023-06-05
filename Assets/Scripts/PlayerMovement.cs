@@ -26,24 +26,11 @@ public class PlayerMovement : MonoBehaviour
     private readonly int _WalkKey = Animator.StringToHash("Walk");
     private readonly int _RunKey = Animator.StringToHash("Run");
 
-    private void Start()
-    {
-        InventoryDisplayer.Instance.onStateChanged += OnInventoryStateChanged;
-    }
-
-    private void OnInventoryStateChanged(bool value)
-    {
-        enabled = !value;
-    }
-
     public void SetInput(float horizontal, float vertical)
     {
-        if (enabled == false)
-            return;
-
         Vector3 direction = new Vector3(horizontal, 0, vertical);
 
-        if (direction.magnitude < 0.1f)
+        if (direction.magnitude < 0.3f)
         {
             _rigidbody.velocity = Vector3.zero;
             _animator.SetTrigger(_IdleKey);

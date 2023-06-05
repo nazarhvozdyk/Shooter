@@ -13,14 +13,7 @@ public class InventoryItemsHandler : MonoBehaviour
 
     private void Awake()
     {
-        _playerInventory.onItemAdded += OnItemAdded;
         _playerInventory.onItemRemoved += OnItemRemoved;
-    }
-
-    private void OnItemAdded(InventoryItem item)
-    {
-        if (item.item.itemType == ItemType.Weapon)
-            TakeItem(item.item);
     }
 
     private void OnItemRemoved(InventoryItem item)
@@ -35,9 +28,9 @@ public class InventoryItemsHandler : MonoBehaviour
         droppedItem.transform.position = dropPosition;
     }
 
-    private void TakeItem(Item item)
+    public void TakeItem(Item item)
     {
-        if (item == null)
+        if (item.itemType != ItemType.Weapon)
             return;
 
         Destroy(_currentItemObject);

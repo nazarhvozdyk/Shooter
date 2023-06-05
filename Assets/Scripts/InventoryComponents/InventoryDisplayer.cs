@@ -35,7 +35,11 @@ public class InventoryDisplayer : MonoBehaviour
         for (int i = 0; i < items.Length; i++)
         {
             ItemIcon itemIcon = Instantiate(_itemIconPrefab, _iconsParent);
-            itemIcon.SetUp(items[i].item, items[i].amount, i);
+
+            if (items[i] == null)
+                itemIcon.SetUp(i);
+            else
+                itemIcon.SetUp(items[i].item, items[i].amount, i);
         }
 
         _inventoryIUObject.SetActive(true);
